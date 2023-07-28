@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body onload="createMaze()">
+    <h1>KILL AKAZA</h1>
+    <video autoplay loop muted plays-inline class="back-video">
+        <source src="fightvideo.mp4" type="video/mp4">
+    </video>
+    <select id="levelselect">
+        <option value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+    </select>
+
+    <div id="maze-container">
+        <img src="rengoku.png" id="rengoku" width="50px" height="50px" alt="rengoku">
+        <img src="akaza.png" id="akaza" alt="akaza" width="50px" height="50px">
+    </div>
+</body>
+<script>
+    let level1 = [
+        [1, 0, 1, 0],
+        [1, 1, 1, 1],
+        [1, 0, 1, 0],
+        [0, 0, 1, 1]
+    ]
+    
+    let level2 = [
+        [1, 1, 1, 0, 1, 0],
+        [1, 0, 1, 1, 1, 1],
+        [0, 0, 1, 0, 0, 0],
+        [1, 0, 1, 1, 1, 1],
+        [1, 0, 1, 0, 1, 0],
+        [1, 1, 1, 0, 1, 1]
+    ]
+    let level3 = [
+        [1, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+        [1, 0, 0, 1, 0, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+        [1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+        [1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
+        [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+        [1, 0, 1, 1, 1, 0, 1, 1, 1, 1],
+        [1, 1, 1, 0, 0, 0, 1, 0, 0, 1]
+    ]
+
+
+    let mazearray = level1;
+    let Level = document.getElementById("levelselect");
+    Level.addEventListener("change", function () {
+        let level = Level.value;
+        // console.log(level);
+        if (level == 1) {
+            mazearray = level1;
+        }
+        if (level == 2) {
+            mazearray = level2;
+        }
+        if (level == 3) {
+            mazearray = level3;
+        }
+        maze.innerHTML =
+            `<img src="rengoku.png" id ="rengoku" width="50px" height="50px" alt="rengoku" >
+        <img src="akaza.png" alt="rengoku" width="50px" height="50px" id="akaza">`
+        createMaze();
+    })
+
+    let maze = document.getElementById("maze-container");
+    let rengoku = document.getElementById("rengoku");
+    let akaza = document.getElementById("akaza");
+    function setratposition(x, y) {
+        rengoku.style.top = x + "px";
+        rengoku.style.left = y + "px";
+    }
+    function setfoodposition(x, y) {
+        akaza.style.bottom = x + "px";
+        akaza.style.right = y + "px";
+    }
+
+
+    function createMaze() {
+        for (let i = 0; i < mazearray.length; i++) {
+            let row = document.createElement("div");
+            row.classList.add("row");
+
+            for (let j = 0; j < mazearray[i].length; j++) {
+                let cell = document.createElement("div");
+                cell.classList.add("cell");
+
+                if (mazearray[i][j] == 0) {
+                    cell.classList.add("wall");
+                }
+                row.appendChild(cell);
+
+
+
+                // rengoku = 2 , replace 2 with 0,0 of mazearray ---------------------------------
+                if (i == 0 && j == 0) {
+                    mazearray[i][j] = 2;
+                }
+            }
+            maze.appendChild(row);
+        }
+
+        setratposition(0, 0)
+        setfoodposition(0, 0)
+        // console.log(mazearray);
+    }
+
+
+    function getratposition() {
+        // find 2 in mazearray and return its position
+        let position = [-1, -1];
+        for (let i = 0; i < mazearray.length; i++) {
+            for (let j = 0; j < mazearray[i].length; j++) {
+                if (mazearray[i][j] == 2) {
+                    position[0] = i;
+                    position[1] = j;
+                }
+            }
+        }
+        console.log(position);
+        return position;
+    }
+
+
+    document.addEventListener("keydown", function (e) {
+        let rengoku = document.getElementById("rengoku");
+        let akaza = document.getElementById("akaza");
+        let ratleft = rengoku.offsetLeft;
+        let rattop = rengoku.offsetTop;
+        let foodleft = akaza.offsetLeft;
+        let foodtop = akaza.offsetTop;
+        let ratposition = getratposition();
+
+
+
+
+        // console.log(ratleft, rattop);
+        if (e.key == "ArrowRight" && ratleft < (mazearray.length - 1) * 50 && mazearray[ratposition[0]][ratposition[1] + 1] == 1) {
+            ratleft += 50;
+            rengoku.style.left = ratleft + "px";
+            mazearray[ratposition[0]][ratposition[1]] = 1;
+            mazearray[ratposition[0]][ratposition[1] + 1] = 2;
+        }
+
+
+        if (e.key == "ArrowLeft" && ratleft > 0 && mazearray[ratposition[0]][ratposition[1] - 1] == 1) {
+            ratleft -= 50;
+            rengoku.style.left = ratleft + "px";
+            mazearray[ratposition[0]][ratposition[1]] = 1;
+            mazearray[ratposition[0]][ratposition[1] - 1] = 2;
+        }
+
+        if (e.key == "ArrowUp" && rattop > 0 && mazearray[ratposition[0] - 1][ratposition[1]] == 1) {
+            rattop -= 50;
+            rengoku.style.top = rattop + "px";
+            mazearray[ratposition[0]][ratposition[1]] = 1;
+            mazearray[ratposition[0] - 1][ratposition[1]] = 2;
+        }
+
+
+        if (e.key == "ArrowDown" && rattop < (mazearray.length - 1) * 50 && mazearray[ratposition[0] + 1][ratposition[1]] == 1) {
+            rattop += 50;
+            rengoku.style.top = rattop + "px";
+            mazearray[ratposition[0]][ratposition[1]] = 1;
+            mazearray[ratposition[0] + 1][ratposition[1]] = 2;
+        }
+
+
+        if (ratleft == foodleft && rattop == foodtop) {
+            alert("You Killed AKAZA!");
+        }
+    })
+</script>
+
+</html>
