@@ -1,1 +1,1 @@
-# MazeGame
+# Anime Maze Assassin
